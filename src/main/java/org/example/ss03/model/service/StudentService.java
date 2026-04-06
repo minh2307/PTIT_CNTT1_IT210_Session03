@@ -1,4 +1,4 @@
-package org.example.ss03.service;
+package org.example.ss03.model.service;
 
 import org.example.ss03.model.entity.Student;
 import org.example.ss03.model.repository.StudentRepository;
@@ -76,5 +76,13 @@ public class StudentService {
         }
 
         return students;
+    }
+
+    // Lấy chi tiết sinh viên theo id
+    public Student getStudentById(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return studentRepository.findById(id);
     }
 }
