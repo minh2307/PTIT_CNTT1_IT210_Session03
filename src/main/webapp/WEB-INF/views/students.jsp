@@ -1,9 +1,35 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<!DOCTYPE html>
 <html>
 <head>
+    <title>Danh sách sinh viên</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+        .status-pause {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-graduated {
+            color: blue;
+            font-weight: bold;
+        }
+    </style>
     <meta charset="UTF-8">
     <title>Danh sách sinh viên</title>
     <style>
