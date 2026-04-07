@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,11 +45,20 @@ public class StudentService {
             return getAllStudents();
         }
 
-        String lowerFaculty = faculty.trim().toLowerCase();
+        String normalizedFaculty = faculty.trim().toLowerCase();
 
         return studentRepository.findAll().stream()
-                .filter(student -> student.getFaculty() != null
-                        && student.getFaculty().toLowerCase().equals(lowerFaculty))
+                .filter(student -> {
+                    if (student.getFaculty() == null) {
+                        return false;
+                    }
+
+                    String studentFaculty = student.getFaculty().trim().toLowerCase();
+
+                    return studentFaculty.equals(normalizedFaculty)
+                            || ("cntt".equals(normalizedFaculty) && "công nghệ thông tin".equals(studentFaculty))
+                            || ("cntt".equals(normalizedFaculty) && "cong nghe thong tin".equals(studentFaculty));
+                })
                 .collect(Collectors.toList());
     }
 
@@ -60,10 +70,6 @@ public class StudentService {
         return studentRepository.findById(id);
     }
 
-    // =========================
-    // PHẦN NGƯỜI 4: SORT
-    // =========================
-
     // Sắp xếp theo tên A-Z
     public List<Student> sortByName(List<Student> students) {
         if (students == null) {
@@ -72,7 +78,7 @@ public class StudentService {
 
         return students.stream()
                 .sorted(Comparator.comparing(
-                        Student::getFullName,
+                        student -> student.getFullName() == null ? "" : student.getFullName(),
                         String.CASE_INSENSITIVE_ORDER
                 ))
                 .collect(Collectors.toList());
@@ -85,7 +91,10 @@ public class StudentService {
         }
 
         return students.stream()
-                .sorted(Comparator.comparing(Student::getGpa).reversed())
+                .sorted(Comparator.comparing(
+                        student -> student.getGpa() == null ? 0.0 : student.getGpa(),
+                        Comparator.reverseOrder()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +102,6 @@ public class StudentService {
     public List<Student> getStudents(String search, String faculty, String sortBy) {
         List<Student> students = studentRepository.findAll();
 
-        // Search theo tên
         if (search != null && !search.trim().isEmpty()) {
             String lowerSearch = search.trim().toLowerCase();
             students = students.stream()
@@ -102,16 +110,23 @@ public class StudentService {
                     .collect(Collectors.toList());
         }
 
-        // Filter theo khoa
         if (faculty != null && !faculty.trim().isEmpty()) {
-            String lowerFaculty = faculty.trim().toLowerCase();
+            String normalizedFaculty = faculty.trim().toLowerCase();
             students = students.stream()
-                    .filter(student -> student.getFaculty() != null
-                            && student.getFaculty().toLowerCase().equals(lowerFaculty))
+                    .filter(student -> {
+                        if (student.getFaculty() == null) {
+                            return false;
+                        }
+
+                        String studentFaculty = student.getFaculty().trim().toLowerCase();
+
+                        return studentFaculty.equals(normalizedFaculty)
+                                || ("cntt".equals(normalizedFaculty) && "công nghệ thông tin".equals(studentFaculty))
+                                || ("cntt".equals(normalizedFaculty) && "cong nghe thong tin".equals(studentFaculty));
+                    })
                     .collect(Collectors.toList());
         }
 
-        // Sort
         if ("name".equalsIgnoreCase(sortBy)) {
             students = sortByName(students);
         } else if ("gpa".equalsIgnoreCase(sortBy)) {
@@ -121,10 +136,6 @@ public class StudentService {
         return students;
     }
 
-    // =========================
-    // PHẦN NGƯỜI 4: DASHBOARD
-    // =========================
-
     // Tổng số sinh viên
     public int countTotalStudents() {
         return studentRepository.findAll().size();
@@ -133,7 +144,9 @@ public class StudentService {
     // GPA trung bình
     public double calculateAverageGpa() {
         return studentRepository.findAll().stream()
-                .mapToDouble(Student::getGpa)
+                .map(Student::getGpa)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
     }
@@ -141,6 +154,7 @@ public class StudentService {
     // Thủ khoa
     public Student findTopStudent() {
         return studentRepository.findAll().stream()
+                .filter(student -> student.getGpa() != null)
                 .max(Comparator.comparing(Student::getGpa))
                 .orElse(null);
     }
@@ -156,7 +170,9 @@ public class StudentService {
 
         Map<String, Long> statusCount = students.stream()
                 .collect(Collectors.groupingBy(
-                        Student::getStatus,
+                        student -> student.getStatus() == null || student.getStatus().trim().isEmpty()
+                                ? "Chưa rõ"
+                                : student.getStatus(),
                         LinkedHashMap::new,
                         Collectors.counting()
                 ));
