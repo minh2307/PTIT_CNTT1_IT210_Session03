@@ -22,17 +22,19 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    compileOnly('jakarta.servlet:jakarta.servlet-api:6.0.0')
+    // Servlet (Tomcat cung cấp)
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    // Spring MVC
+    implementation "org.springframework:spring-webmvc:7.0.6"
 
-    // Source: https://mvnrepository.com/artifact/org.springframework/spring-webmvc
-    implementation("org.springframework:spring-webmvc:7.0.6")
-    // Source: https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api
-    implementation("jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.2")
-    // Source: https://mvnrepository.com/artifact/org.glassfish.web/jakarta.servlet.jsp.jstl
-    runtimeOnly("org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1")
+    // ✅ JSTL (CHỈ GIỮ 1 BỘ - version 3.x)
+    implementation "jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.2"
+    runtimeOnly "org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1"
+
+    // Test
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 test {
