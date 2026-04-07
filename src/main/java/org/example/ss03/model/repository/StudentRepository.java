@@ -1,10 +1,12 @@
 package org.example.ss03.model.repository;
 
 import org.example.ss03.model.entity.Student;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class StudentRepository {
     private final List<Student> students;
 
