@@ -1,4 +1,4 @@
-package org.example.ss03.model.entity;
+package src.main.java.org.example.ss03.model.entity;
 
 public class Student {
     private Long id;
